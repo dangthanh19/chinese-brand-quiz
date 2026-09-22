@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎈 Đoán thương hiệu Trung Quốc • Trò chơi vui nhộn</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(145deg, #ffe9b0 0%, #ffd5b0 100%);
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .game-wrapper {
+            max-width: 750px;
+            width: 100%;
+        }
+
+        .game-card {
+            background: #fff9f0;
+            border-radius: 60px 60px 50px 50px;
+            padding: 30px 28px 38px;
+            box-shadow: 0 20px 30px rgba(255, 140, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.1);
+            border: 4px solid #ffb882;
+            transition: all 0.2s;
+        }
+
+        /* Tiêu đề + tiến độ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-icon span {
+            font-size: 2rem;
+        }
+
+        .progress-badge {
+            background: #ffcf9a;
+            border-radius: 100px;
+            padding: 10px 22px;
+            font-weight: 700;
+            color: #6b3e1c;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            box-shadow: inset 0 -3px 0 #d49b6a, 0 4px 8px #ffe2c1;
+            border: 1px solid #f7b27a;
+        }
+
+        .score-badge {
+            background: #ffb882;
+            border-radius: 100px;
+            padding: 8px 22px;
+            font-weight: 700;
+            color: #4b2a0e;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 0 #b46f3a;
+        }
+
+        /* thẻ câu hỏi */
+        .question-area {
+            background: #ffe6d1;
+            border-radius: 50px;
+            padding: 28px 24px 24px;
+            margin: 10px 0 26px;
+            border: 3px dashed #ff9f5b;
+            position: relative;
+            box-shadow: 0 10px 0 #e5b68b;
+        }
+
+        .chinese-name {
+            font-size: 3.4rem;
+            font-weight: 800;
+            color: #b3411b;
+            text-align: center;
+            line-height: 1.2;
+            letter-spacing: 6px;
+            text-shadow: 4px 4px 0 #ffc489;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .pinyin {
+            text-align: center;
+            font-size: 1.7rem;
+            color: #8a5e3c;
+            font-weight: 600;
+            background: #fff2e2;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 60px;
+            margin: 0 auto 10px;
+            letter-spacing: 2px;
+            border: 1px solid #eebf8e;
+        }
+
+        .pinyin-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 6px;
+        }
+
+        .question-text {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #5e3a1e;
+            font-weight: 600;
+            margin-top: 12px;
+            background: #fdecdb;
+            padding: 6px 20px;
+            border-radius: 100px;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+            border: 1px solid #e6bb92;
+        }
+
+        /* lưới đáp án */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 18px 0 14px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 4px solid #ffb882;
+            border-radius: 40px;
+            padding: 18px 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #4d2b12;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            box-shadow: 0 7px 0 #d49b6a, 0 6px 12px rgba(255, 160, 70, 0.2);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.3;
+            word-break: break-word;
+            font-family: inherit;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 0 #c48a54, 0 10px 18px #ffbe7a;
+            background: #fff9ea;
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #c48a54;
+        }
+
+        .option-btn.correct {
+            background: #b1e6b1;
+            border-color: #2e7d32;
+            box-shadow: 0 5px 0 #1e5e22;
+            color: #1d4a1d;
+            transform: translateY(2px);
+            cursor: default;
+        }
+
+        .option-btn.wrong {
+            background: #f9b5b5;
+            border-color: #b71c1c;
+            box-shadow: 0 5px 0 #8b1e1e;
+            color: #5f1a1a;
+            transform: translateY(2px);
+            cursor: default;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        /* phản hồi */
+        .feedback {
+            margin: 18px 0 8px;
+            padding: 14px 18px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffe9d4;
+            color: #502d12;
+            line-height: 1.5;
+        }
+
+        .feedback.correct-feedback {
+            background: #d9f0d9;
+            border-color: #78b878;
+            color: #1b4d1b;
+        }
+
+        .feedback.wrong-feedback {
+            background: #ffe0e0;
+            border-color: #e07a7a;
+            color: #7a1f1f;
+        }
+
+        /* nút điều hướng */
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            border: none;
+            border-radius: 60px;
+            padding: 16px 32px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 7px 0 #b46f3a;
+            background: #ffb26e;
+            color: #3e270e;
+            border: 2px solid #ffdaad;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            flex: 1 1 auto;
+        }
+
+        .action-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #b46f3a;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.4;
+            transform: translateY(3px);
+            box-shadow: 0 4px 0 #b46f3a;
+            pointer-events: none;
+        }
+
+        .action-btn.restart {
+            background: #ffdbb5;
+            box-shadow: 0 7px 0 #b98f63;
+            color: #4b2e14;
+        }
+
+        .action-btn.next {
+            background: #9fd89f;
+            box-shadow: 0 7px 0 #3f7a3f;
+            color: #1f431f;
+        }
+
+        /* màn hình kết thúc */
+        .result-screen {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .result-emoji {
+            font-size: 5rem;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #a1441e;
+            background: #ffebd2;
+            padding: 20px 24px;
+            border-radius: 60px;
+            margin: 18px 0;
+            border: 3px solid #ffb882;
+            box-shadow: inset 0 -5px 0 #e5b68b;
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #6b3e1c;
+            margin-bottom: 18px;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        /* tinh chỉnh nhỏ */
+        .text-center {
+            text-align: center;
+        }
+
+        @media (max-width: 500px) {
+            .game-card {
+                padding: 20px 16px 28px;
+                border-radius: 40px;
+            }
+
+            .chinese-name {
+                font-size: 2.6rem;
+                letter-spacing: 4px;
+            }
+
+            .pinyin {
+                font-size: 1.3rem;
+                padding: 4px 18px;
+            }
+
+            .option-btn {
+                font-size: 1.1rem;
+                padding: 14px 6px;
+            }
+
+            .actions {
+                gap: 10px;
+            }
+
+            .action-btn {
+                padding: 14px 18px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-card" id="gameCard">
+            <!-- Phần header: icon + tiến độ + điểm -->
+            <div class="header">
+                <div class="brand-icon">
+                    <span>🧋</span>
+                    <span>🏷️</span>
+                </div>
+                <div class="progress-badge" id="progressText">第 1 / 5 题</div>
+                <div class="score-badge" id="scoreDisplay">⭐ 0</div>
+            </div>
+
+            <!-- Màn hình chơi game -->
+            <div id="quizSection">
+                <div class="question-area">
+                    <div class="chinese-name" id="chineseName">可口可乐</div>
+                    <div class="pinyin-wrapper">
+                        <div class="pinyin" id="pinyinText">Kěkǒu Kělè</div>
+                    </div>
+                    <div class="question-text">Thương hiệu tiếng Anh là gì?</div>
+                </div>
+
+                <div class="options-grid" id="optionsContainer">
+                    <!-- Các nút đáp án sẽ được JS render -->
+                </div>
+
+                <div class="feedback" id="feedbackMessage">
+                    👆 Chọn một đáp án nhé!
+                </div>
+
+                <div class="actions">
+                    <button class="action-btn restart" id="restartBtn" aria-label="Chơi lại">🔄 Chơi lại</button>
+                    <button class="action-btn next" id="nextBtn" disabled>▶ Tiếp theo</button>
+                </div>
+            </div>
+
+            <!-- Màn hình kết thúc -->
+            <div id="resultSection" class="result-screen hide">
+                <div class="result-emoji">🎉</div>
+                <div class="result-score" id="finalScore">4 / 5</div>
+                <div class="result-message" id="finalMessage">Bạn làm rất tốt!</div>
+                <button class="action-btn restart" id="playAgainBtn" style="margin-top: 12px; width: 100%;">🔄 Chơi lại từ đầu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Dữ liệu câu hỏi
+            const questions = [
+                {
+                    chinese: '可口可乐',
+                    pinyin: 'Kěkǒu Kělè',
+                    correct: 'Coca-Cola',
+                    options: ['Coca-Cola', 'Pepsi', 'Nike', 'Apple'],
+                    explanation: '可口可乐 là tên tiếng Trung của Coca-Cola.'
+                },
+                {
+                    chinese: '麦当劳',
+                    pinyin: 'Màidāngláo',
+                    correct: 'McDonald’s',
+                    options: ['KFC', 'Burger King', 'McDonald’s', 'Starbucks'],
+                    explanation: '麦当劳 là tên tiếng Trung của McDonald’s.'
+                },
+                {
+                    chinese: '耐克',
+                    pinyin: 'Nàikè',
+                    correct: 'Nike',
+                    options: ['Adidas', 'Nike', 'Puma', 'Reebok'],
+                    explanation: '耐克 là tên tiếng Trung của Nike.'
+                },
+                {
+                    chinese: '苹果',
+                    pinyin: 'Píngguǒ',
+                    correct: 'Apple',
+                    options: ['Samsung', 'Apple', 'Huawei', 'Xiaomi'],
+                    explanation: '苹果 là tên tiếng Trung của Apple.'
+                },
+                {
+                    chinese: '星巴克',
+                    pinyin: 'Xīngbākè',
+                    correct: 'Starbucks',
+                    options: ['Costa', 'Starbucks', 'Luckin', 'Dunkin’'],
+                    explanation: '星巴克 là tên tiếng Trung của Starbucks.'
+                }
+            ];
+
+            // Biến trạng thái
+            let currentIndex = 0;               // 0-based
+            let score = 0;
+            let answered = false;              // đã chọn đáp án trong câu hiện tại?
+            let currentQuestions = [...questions]; // copy để có thể reset
+
+            // DOM elements
+            const quizSection = document.getElementById('quizSection');
+            const resultSection = document.getElementById('resultSection');
+            const progressText = document.getElementById('progressText');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const chineseNameEl = document.getElementById('chineseName');
+            const pinyinTextEl = document.getElementById('pinyinText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const nextBtn = document.getElementById('nextBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            const finalScoreEl = document.getElementById('finalScore');
+            const finalMessageEl = document.getElementById('finalMessage');
+
+            // Hàm hiển thị câu hỏi theo currentIndex
+            function renderQuestion() {
+                const q = currentQuestions[currentIndex];
+                // Cập nhật tên tiếng Trung + pinyin
+                chineseNameEl.textContent = q.chinese;
+                pinyinTextEl.textContent = q.pinyin;
+
+                // Cập nhật tiến độ
+                progressText.textContent = `第 ${currentIndex + 1} / ${currentQuestions.length} 题`;
+                // Cập nhật điểm
+                scoreDisplay.textContent = `⭐ ${score}`;
+
+                // Xóa feedback cũ, đặt trạng thái ban đầu
+                feedbackMessage.textContent = '👆 Chọn một đáp án nhé!';
+                feedbackMessage.classList.remove('correct-feedback', 'wrong-feedback');
+                // Vô hiệu hóa nút next (chưa chọn)
+                nextBtn.disabled = true;
+                answered = false;
+
+                // Render các nút đáp án (xáo trộn để thú vị)
+                const shuffledOptions = shuffleArray([...q.options]);
+                optionsContainer.innerHTML = '';
+                shuffledOptions.forEach(optionText => {
+                    const btn = document.createElement('button');
+                    btn.classList.add('option-btn');
+                    btn.textContent = optionText;
+                    btn.dataset.value = optionText;
+                    btn.addEventListener('click', () => handleOptionClick(btn, optionText, q));
+                    optionsContainer.appendChild(btn);
+                });
+            }
+
+            // Hàm trộn mảng (Fisher–Yates)
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            // Xử lý khi người chơi chọn đáp án
+            function handleOptionClick(btn, selectedValue, questionObj) {
+                // Nếu đã trả lời câu này rồi thì không làm gì
+                if (answered) return;
+
+                // Đánh dấu đã trả lời
+                answered = true;
+
+                // Vô hiệu hóa tất cả nút đáp án
+                const allOptions = document.querySelectorAll('.option-btn');
+                allOptions.forEach(opt => opt.disabled = true);
+
+                const isCorrect = (selectedValue === questionObj.correct);
+
+                // Xử lý giao diện: tô màu nút đã chọn + nút đúng
+                allOptions.forEach(opt => {
+                    const optVal = opt.dataset.value;
+                    if (optVal === questionObj.correct) {
+                        opt.classList.add('correct');   // luôn highlight đáp án đúng
+                    }
+                    if (optVal === selectedValue && optVal !== questionObj.correct) {
+                        opt.classList.add('wrong');     // nếu chọn sai thì nút được chọn thành wrong
+                    }
+                });
+
+                // Nếu chọn đúng, cũng thêm correct cho nút được chọn (đã thêm ở trên)
+                // Cập nhật điểm + feedback
+                if (isCorrect) {
+                    score++;
+                    scoreDisplay.textContent = `⭐ ${score}`; // cập nhật ngay
+                    feedbackMessage.textContent = `✅ 回答正确！ ${questionObj.explanation}`;
+                    feedbackMessage.classList.add('correct-feedback');
+                    feedbackMessage.classList.remove('wrong-feedback');
+                } else {
+                    feedbackMessage.textContent = `❌ 回答错误！ ${questionObj.explanation}`;
+                    feedbackMessage.classList.add('wrong-feedback');
+                    feedbackMessage.classList.remove('correct-feedback');
+                }
+
+                // Bật nút "Tiếp theo"
+                nextBtn.disabled = false;
+            }
+
+            // Chuyển sang câu hỏi tiếp theo
+            function goToNextQuestion() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    // Hết câu hỏi → hiển thị kết quả
+                    showResult();
+                }
+            }
+
+            // Hiển thị màn hình kết quả
+            function showResult() {
+                quizSection.classList.add('hide');
+                resultSection.classList.remove('hide');
+
+                const total = currentQuestions.length;
+                finalScoreEl.textContent = `${score} / ${total}`;
+
+                // Thông điệp tiếng Việt + tiếng Trung vui vẻ
+                let message = '';
+                if (score === total) {
+                    message = '🎉 Tuyệt vời! Bạn giỏi quá! (完美！)';
+                } else if (score >= total - 1) {
+                    message = '👏 Rất tốt! Chỉ cần cố thêm chút nữa! (很棒！)';
+                } else if (score >= total / 2) {
+                    message = '😊 Khá ổn! Luyện tập thêm nhé! (加油！)';
+                } else {
+                    message = '💪 Đừng nản, thử lại lần nữa nhé! (继续加油！)';
+                }
+                finalMessageEl.textContent = message;
+            }
+
+            // Đặt lại toàn bộ game
+            function resetGame() {
+                // Reset biến
+                currentIndex = 0;
+                score = 0;
+                answered = false;
+
+                // Ẩn kết quả, hiện quiz
+                resultSection.classList.add('hide');
+                quizSection.classList.remove('hide');
+
+                // Cập nhật điểm hiển thị
+                scoreDisplay.textContent = `⭐ 0`;
+                // Render câu hỏi đầu tiên
+                renderQuestion();
+            }
+
+            // Khởi tạo các sự kiện
+            function init() {
+                // Render câu hỏi đầu tiên
+                renderQuestion();
+
+                // Nút "Tiếp theo"
+                nextBtn.addEventListener('click', goToNextQuestion);
+
+                // Nút "Chơi lại" (trên thanh công cụ)
+                restartBtn.addEventListener('click', resetGame);
+
+                // Nút "Chơi lại từ đầu" ở màn hình kết quả
+                playAgainBtn.addEventListener('click', resetGame);
+            }
+
+            // Chạy khi DOM sẵn sàng
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>
